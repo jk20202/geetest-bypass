@@ -26,7 +26,7 @@ class Config:
     }
 
     biht = '1426265548'
-    lib_key = 'dQFB'
-    lib_val = 'BoHp'
-    abo_key = '(n[5:7]+n[7:9])+.+(n[20:27])+.+(n[10:10]+n[12:12]+n[3:3]+n[7:7])'
-    abo_val = 'n[7:14]'
+    lib_key = 'uONi'
+    lib_val = '4vVu'
+    abo_key = '(n[19:21]+n[19:21])+.+(n[23:26])+.+(n[18:23])'
+    abo_val = 'n[6:9]'
