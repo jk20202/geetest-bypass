@@ -36,7 +36,7 @@ uv publish
 - pytest: `addopts = "-s"` (stdout not captured).
 - pyrefly suppressions are inline: `# pyrefly: ignore [code]`.
 - Git hooks are `prek` (`prek.toml`): trailing-whitespace, end-of-file-fixer, check-added-large-files, `ruff-check --fix`, `ruff-format`.
-- CI (`ci.yml`) runs **only** `uvx ruff check` + `uvx ruff format --check` on Python 3.11 — no tests. Publishing runs on `v[0-9]*` tags; `publish-voice.yml` publishes the extension on `voice-v*` tags.
+- CI (`ci.yml`) runs **only** `uvx ruff check` + `uvx ruff format --check` on Python 3.11 — no tests. The main package publishes on `v[0-9]*` tags and gets a GitHub Release; `publish-pkg.yml` publishes one extension per `<name>-v<version>` tag (PyPI only, no Release), resolving `extensions/wulu-geetest-bypass-<name>` from the tag.
 
 ## Architecture
 
