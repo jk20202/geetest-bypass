@@ -1096,6 +1096,7 @@ name = "wulu-geetest-bypass-icon"
 version = "0.1.0"
 source = { editable = "extensions/wulu-geetest-bypass-icon" }
 dependencies = [
+    { name = "numpy" },
     { name = "onnxruntime" },
     { name = "opencv-python-headless" },
     { name = "platformdirs" },
@@ -1103,6 +1104,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "numpy", specifier = ">=1.24.0" },
     { name = "onnxruntime", specifier = ">=1.31.0" },
     { name = "opencv-python-headless", specifier = ">=4.13.0.92" },
     { name = "platformdirs", specifier = ">=4.12.4" },
