@@ -26,27 +26,34 @@
 - 🌐 **高级网络能力** — 原生支持代理链、浏览器 TLS 指纹仿真与自定义请求头。
 
 <a id="supported-risk-types"></a>
+
 ## 🧩 支持类型
 
-| 类型 | 说明 | 依赖 | 支持 |
-| ---- | ---- | ---- | ---- |
-| `ai` | 静默验证 | 无 | ✅ |
-| `slide` | 滑块拼图 | `[slide]` | ✅ |
-| `match` | 3×3 连线 | 无 | ✅ |
-| `winlinze` | 五子棋 | 无 | ✅ |
-| `svg_seed` | SVG 3×3 图片选择 | `[svg]` | ✅ |
-| `svg_icon` | SVG 2×2 图标选择 | `[svg]` | ✅ |
-| `voice` | 语音验证 | `[voice]` | ✅ |
-| `icon` | 图标点选 | 无 | ❌ |
-| `word` | 文字点选 | 无 | ❌ |
-| `nine` | 九宫格 | 无 | ❌ |
-| `phrase` | 短语识别 | 无 | ❌ |
-| `pencil` | 涂鸦 | 无 | ❌ |
-| `space` | 空间推理 | 无 | ❌ |
+| 类型       | 说明             | 依赖      | 支持 |
+| ---------- | ---------------- | --------- | ---- |
+| `ai`       | 静默验证         | 无        | ✅   |
+| `slide`    | 滑块拼图         | `[slide]` | ✅   |
+| `match`    | 3×3 连线         | 无        | ✅   |
+| `winlinze` | 五子棋           | 无        | ✅   |
+| `svg_seed` | SVG 3×3 图片选择 | `[svg]`   | ✅   |
+| `svg_icon` | SVG 2×2 图标选择 | `[svg]`   | ✅   |
+| `voice`    | 语音验证         | `[voice]` | ✅   |
+| `icon`     | 方向类图标点选   | `[icon]`  | 🧪   |
+|            | 相似类图标点选   | 无        | ❌   |
+| `word`     | 文字点选         | 无        | ❌   |
+| `nine`     | 九宫格           | 无        | ❌   |
+| `phrase`   | 短语识别         | 无        | ❌   |
+| `pencil`   | 涂鸦             | 无        | ❌   |
+| `space`    | 空间推理         | 无        | ❌   |
 
-`依赖` 列指向下方的[依赖组](#installation)。标记为 ❌ 的类型没有内置求解器，需通过[自定义求解器](#register-custom-solvers)自行注册。
+`依赖` 列指向下方的[依赖组](#installation)。
+
+- ✅ — 内置求解器，开箱可用。
+- 🧪 — 实验性求解器，尚未充分验证。
+- ❌ — 没有内置求解器，需通过[自定义求解器](#register-custom-solvers)自行注册。
 
 <a id="installation"></a>
+
 ## 📦 安装
 
 推荐使用 `uv`（更快、更现代的 Python 包管理器）：
@@ -73,9 +80,37 @@ uv add "wulu-geetest-bypass[slide]"
 # SVG 动图选择
 uv add "wulu-geetest-bypass[svg]"
 
+# icon 图标点选（方向类题目）
+uv add "wulu-geetest-bypass[icon]"
+wulu-geetest download icon  # 预热模型
+
 # 安装全部
 uv add "wulu-geetest-bypass[all]"
 ```
+
+### 命令行
+
+> **0.5.0 新增。** `wulu-geetest` 命令、`downloads` entry point 组和 `--endpoint`
+> 参数在 0.4.x 及更早版本中都不存在。升级：`uv add -U wulu-geetest-bypass`。
+
+安装后会带一个 `wulu-geetest` 命令。需要下载大模型的扩展会通过
+`wulu_geetest_bypass.downloads` 这个 entry point 组注册下载器，主命令会自动发现，
+所以一个命令就能覆盖全部扩展：
+
+```bash
+wulu-geetest download --list    # 列出已装扩展能提供的模型
+wulu-geetest download <name>    # 下载单个（已缓存则跳过）
+wulu-geetest download --all     # 下载全部已注册模型
+wulu-geetest download --all -f  # 强制重新下载
+```
+
+模型在首次使用时本来就会自动下载，这个命令是给「提前预热」用的，比如打进镜像。
+`--quiet` 关掉进度条；stderr 不是终端时进度条也会自动关掉。`--endpoint <url>`
+可以把下载改走镜像站，比如默认站点不通时用 `--endpoint https://hf-mirror.com`。
+
+扩展作者请注意：把 `download_model(progress=None, *, force=False) -> Path` 注册到同一个
+entry point 组即可，你取的名字就是命令行参数名；完整契约见
+`wulu_geetest_bypass.cli.discover_downloads` 的 docstring。
 
 ## 🚀 快速开始
 
@@ -103,6 +138,7 @@ asyncio.run(main())
 常见场景到这里就够了。重试控制、分步流程、语音模式、自定义求解器与 HTTP 配置见[进阶用法](#advanced-usage)。
 
 <a id="advanced-usage"></a>
+
 ## 💡 进阶用法
 
 ### 自动重试与单次调用 `resolve()`
@@ -146,6 +182,7 @@ result = await g.resolve()
 > **注意**：并非所有站点都开启无障碍通道。若不支持，`load()` 返回的 `show_voice` 字段为 `false`，此时设置 `voice=True` 不生效，仍使用原有的 `risk_type`。
 
 <a id="register-custom-solvers"></a>
+
 ### 注册自定义求解器
 
 对于没有内置支持的风险类型，可以通过 `register_solver` 注入自定义求解器：
@@ -162,13 +199,13 @@ Geetest.register_solver('icon', solve_icon)
 
 注册后，`generate_w()` 会自动以对应的 payload 字段调用它。**点击/绘制类求解器返回相对验证图片的归一化坐标（取值 `[0, 1]`）**——库内部负责换算到窗口/协议格式（例如 `userresponse` 使用基于图片的百分比 × 10000），并生成点击轨迹（`icon` / `word` / `phrase` 会包含末尾的提交按钮点击）：
 
-| 类型 | 求解器签名 |
-| ---- | ---- |
-| `icon` / `word` | `(imgs: bytes, ques: list[bytes]) -> list[tuple[float, float]]` |
-| `phrase` | `(imgs: bytes) -> list[tuple[float, float]]` |
-| `nine` | `(imgs: bytes, ques: list[bytes], nine_nums: int) -> list[tuple[int, int]]` |
-| `pencil` | `(imgs: bytes) -> list` |
-| `space` | 未单独内置；极验将 `space` 路由为 `svg_icon`（由 SVG 求解器处理） |
+| 类型            | 求解器签名                                                                  |
+| --------------- | --------------------------------------------------------------------------- |
+| `icon` / `word` | `(imgs: bytes, ques: list[bytes]) -> list[tuple[float, float]]`             |
+| `phrase`        | `(imgs: bytes) -> list[tuple[float, float]]`                                |
+| `nine`          | `(imgs: bytes, ques: list[bytes], nine_nums: int) -> list[tuple[int, int]]` |
+| `pencil`        | `(imgs: bytes) -> list`                                                     |
+| `space`         | 未单独内置；极验将 `space` 路由为 `svg_icon`（由 SVG 求解器处理）           |
 
 内置求解器也可以被覆盖，既可直接传入求解器，也可以用装饰器形式：
 
@@ -199,19 +236,20 @@ g = Geetest(captcha_id='your_captcha_id', risk_type='slide', client=Client(confi
 
 ### 配置项 — `Geetest(**options)`
 
-| 参数 | 类型 | 说明 |
-| ---- | ---- | ---- |
-| `captcha_id` | `str` | 验证 ID（必填） |
-| `risk_type` | `RiskType` | 风险类型，默认 `'ai'` |
-| `client_type` | `ClientType` | 客户端类型，`'web'` / `'web_mobile'` / `'android'` / `'ios'` |
-| `lang` | `Lang` | 语言，`'zho'` / `'eng'` / `'fra'` / `'deu'` 等共 17 种 |
-| `challenge` | `str` | 自定义 challenge（省略时自动生成） |
-| `user_info` | `Any` | 附加用户信息（预留） |
-| `voice` | `bool` | 启用无障碍语音验证（需要 `[voice]`） |
-| `client_options` | `wreq.ClientConfig` | HTTP 客户端配置（代理、请求头、仿真等） |
-| `client` | `wreq.Client \| None` | 自定义 HTTP 客户端（优先于 `client_options`） |
+| 参数             | 类型                  | 说明                                                         |
+| ---------------- | --------------------- | ------------------------------------------------------------ |
+| `captcha_id`     | `str`                 | 验证 ID（必填）                                              |
+| `risk_type`      | `RiskType`            | 风险类型，默认 `'ai'`                                        |
+| `client_type`    | `ClientType`          | 客户端类型，`'web'` / `'web_mobile'` / `'android'` / `'ios'` |
+| `lang`           | `Lang`                | 语言，`'zho'` / `'eng'` / `'fra'` / `'deu'` 等共 17 种       |
+| `challenge`      | `str`                 | 自定义 challenge（省略时自动生成）                           |
+| `user_info`      | `Any`                 | 附加用户信息（预留）                                         |
+| `voice`          | `bool`                | 启用无障碍语音验证（需要 `[voice]`）                         |
+| `client_options` | `wreq.ClientConfig`   | HTTP 客户端配置（代理、请求头、仿真等）                      |
+| `client`         | `wreq.Client \| None` | 自定义 HTTP 客户端（优先于 `client_options`）                |
 
 <a id="data-models"></a>
+
 ### 数据模型
 
 `load() -> dict` 返回初始化数据，包含 `captcha_type`、`lot_number`、`payload`、`process_token`、`pow_detail` 等字段，可直接传给 `verify()`。
@@ -256,16 +294,16 @@ class Seccode:
     captcha_output: str
 ```
 
-| 参数 | 类型 | 说明 |
-| ---- | ---- | ---- |
+| 参数    | 类型  | 说明                                              |
+| ------- | ----- | ------------------------------------------------- |
 | `retry` | `int` | `fail` 的重试次数，默认 `3`；`forbidden` 立即抛出 |
 
 ### 异常
 
-| 异常 | 说明 |
-| ---- | ---- |
-| `GeetestError` | 所有自定义异常的基类 |
-| `VerifyError` | `/verify` 未返回 `success`，携带 `.result` / `.fail_count` |
+| 异常           | 说明                                                       |
+| -------------- | ---------------------------------------------------------- |
+| `GeetestError` | 所有自定义异常的基类                                       |
+| `VerifyError`  | `/verify` 未返回 `success`，携带 `.result` / `.fail_count` |
 
 `VerifyError.result` 是服务端原始值：`fail`（已判分但不通过 —— 答案错、header 风控或行为分低；可重试）、
 `forbidden`（判分前就被拒 —— **IP 限流**，与答案无关；应退避或换出口 IP，不要死循环重试）、
@@ -280,6 +318,14 @@ class Seccode:
 - 本项目持续跟踪极验 v4 行为验证的变更，并及时更新绕过逻辑与求解器。
 - 遇到问题欢迎提交 [Issue](https://github.com/wulu007/geetest-bypass/issues)，也欢迎 PR。
 - 如果本项目对你有帮助，欢迎点个 ⭐ Star 支持持续开发。
+
+## 🙏 致谢
+
+`icon` 求解器使用的 YOLO 模型并非本项目训练。ONNX 模型文件与 `_config.py` 中的方向映射表均来自
+[gaogzhen/GeekedTest](https://github.com/gaogzhen/GeekedTest)，遵循 MIT License —— 完整许可文本见
+[THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md)。
+
+同时感谢 [xKiian/GeekedTest](https://github.com/xKiian/GeekedTest)，gaogzhen/GeekedTest 基于该项目构建。
 
 ## 📄 License
 
