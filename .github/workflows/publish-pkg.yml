@@ -2,7 +2,7 @@ name: Publish Package
 
 on:
   push:
-    tags: ['*-v*']
+    tags: ["*-v*"]
 
 permissions:
   id-token: write
@@ -15,10 +15,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@v8.1.0
+      - uses: astral-sh/setup-uv@v9.0.0
         with:
           enable-cache: true
-          python-version: '3.11'
+          python-version: "3.11"
 
       - name: Resolve the extension package from the tag
         id: pkg
