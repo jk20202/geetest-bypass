@@ -7,26 +7,6 @@ is hosted, how detections are thresholded, and the class tables.
 from __future__ import annotations
 
 import os
-from pathlib import Path
-
-from platformdirs import user_cache_dir
-
-# Where the model is hosted. `HF_ENDPOINT` is the same variable huggingface_hub
-# reads, so pointing it at a mirror (https://hf-mirror.com) reroutes this too.
-FILENAME = 'icon_t1_261010'
-OWNER = 'wulu007'
-HF_REPO = 'gt'
-DEFAULT_ENDPOINT = 'https://huggingface.co'
-
-CACHE_DIR = Path(user_cache_dir('wulu-geetest-bypass', appauthor=False))
-MODEL_PATH = CACHE_DIR / FILENAME
-
-
-def model_url() -> str:
-    """Read the endpoint at call time, so ``HF_ENDPOINT`` may be set after import."""
-    endpoint = os.environ.get('HF_ENDPOINT', DEFAULT_ENDPOINT).rstrip('/')
-    return f'{endpoint}/{OWNER}/{HF_REPO}/resolve/main/{FILENAME}'
-
 
 CONF_THRES = float(os.environ.get('WULU_ICON_CONF_THRES', 0.10))
 IOU_THRES = float(os.environ.get('WULU_ICON_IOU_THRES', 0.45))

@@ -15,7 +15,7 @@ from ._config import (
     IOU_THRES,
     MAX_DET,
 )
-from .download import resolve_model
+from .hub import get_model_path
 
 
 class Detection(TypedDict):
@@ -93,7 +93,7 @@ def _match_direction(
 
 @functools.lru_cache(maxsize=1)
 def _maybe_session():
-    model_path = resolve_model()
+    model_path = get_model_path()
     import onnxruntime as ort
 
     return ort.InferenceSession(str(model_path), providers=['CPUExecutionProvider'])

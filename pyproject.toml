@@ -11,7 +11,12 @@ version = "0.5.0b1"
 description = "Pure Python Geetest v4 CAPTCHA solver with human-like track simulation, no Node.js or browser"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = ["pycryptodome>=3.23.0", "smcryptopy>=0.2.1", "wreq>=0.12.0"]
+dependencies = [
+    "pooch[progress]>=1.9.0",
+    "pycryptodome>=3.23.0",
+    "smcryptopy>=0.2.1",
+    "wreq>=0.12.0",
+]
 license = { text = "MIT" }
 authors = [{ name = "wulu007", email = "dabaobeix@gmail.com" }]
 keywords = [
@@ -39,7 +44,7 @@ icon = ["wulu-geetest-bypass-icon"]
 all = ["wulu-geetest-bypass[voice,slide,svg,icon]"]
 
 [project.scripts]
-wulu-geetest = "wulu_geetest_bypass.cli:main"
+gt-pull = "wulu_geetest_bypass.cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/wulu_geetest_bypass"]

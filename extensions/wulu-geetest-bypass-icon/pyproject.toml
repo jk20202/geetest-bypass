@@ -19,7 +19,7 @@ dependencies = [
     "numpy>=1.24.0",
     "onnxruntime>=1.31.0",
     "opencv-python-headless>=4.13.0.92",
-    "platformdirs>=4.12.4",
+    "pooch[progress]>=1.9.0",
 ]
 
 [build-system]
@@ -29,8 +29,8 @@ build-backend = "uv_build"
 [project.entry-points."wulu_geetest_bypass.solvers"]
 icon = "wulu_geetest_bypass_icon.solver:solve_icon"
 
-[project.entry-points."wulu_geetest_bypass.downloads"]
-icon = "wulu_geetest_bypass_icon.download:download_model"
+[project.entry-points."wulu_geetest_bypass.fetcher"]
+icon = "wulu_geetest_bypass_icon.hub:get_fetcher"
 
 [project.urls]
 Homepage = "https://github.com/wulu007/geetest-bypass"
