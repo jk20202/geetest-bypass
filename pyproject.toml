@@ -99,9 +99,8 @@ search-path = [
 dev = [
     "pytest>=9.1.0",
     "pytest-asyncio>=1.4.0",
-    "faster-whisper>=1.2.1",
     "wulu-geetest-bypass[all]",
-    "pyrefly>=1.2.0",
+    "pyrefly==1.4.0",
     "ruff==0.16.4",
     "pytest-benchmark>=5.3.0",
 ]
